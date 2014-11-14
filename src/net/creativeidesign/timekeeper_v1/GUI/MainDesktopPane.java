@@ -4,8 +4,11 @@
  * and open the template in the editor.
  */
 package net.creativeidesign.timekeeper_v1.GUI;
+import java.awt.event.WindowEvent;
+import javax.swing.JOptionPane;
 import net.creativeidesign.timekeeper_v1.UserModel;
 import net.creativeidesign.timekeeper_v1.util.BigDump;
+import net.creativeidesign.timekeeper_v1.util.FrameLister;
 import net.creativeidesign.timekeeper_v1.util.SyncData;
 import net.creativeidesign.timekeeper_v1.util.TaskImport;
 
@@ -214,6 +217,7 @@ public class MainDesktopPane extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
     
     private void initMyComponents(){
+        addWindowListener(new FrameLister());
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -240,7 +244,7 @@ public class MainDesktopPane extends javax.swing.JFrame {
     }
     
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
-        System.exit(0);
+        dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }//GEN-LAST:event_exitMenuItemActionPerformed
 
     private void importMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importMenuItemActionPerformed
@@ -306,8 +310,9 @@ public class MainDesktopPane extends javax.swing.JFrame {
     }//GEN-LAST:event_compactViewMenuItemActionPerformed
 
     private void syncMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_syncMenuItemActionPerformed
-        if(SyncData.upSync()){
-            System.out.println("Sysced sucessfully");
+        if(SyncData.Sync()){
+            JOptionPane.showMessageDialog (null, "Syncronized sucessfully!", "Syncronizing", JOptionPane.INFORMATION_MESSAGE);
+            System.out.println("Synced sucessfully");
         }else
             System.out.println("Something went wrong");
     }//GEN-LAST:event_syncMenuItemActionPerformed

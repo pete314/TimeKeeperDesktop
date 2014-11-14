@@ -27,6 +27,7 @@ import javax.swing.table.DefaultTableModel;
 import net.creativeidesign.timekeeper_v1.ToDoItemModel;
 import net.creativeidesign.timekeeper_v1.ToDoItemModelControl;
 import net.creativeidesign.timekeeper_v1.db.DerbyDB;
+import net.creativeidesign.timekeeper_v1.util.FrameLister;
 
 /**
  *
@@ -183,6 +184,9 @@ public class CompactView extends javax.swing.JFrame implements TaskOptions_inter
     }
     
     private void initMyComponents(){
+        addWindowListener(new FrameLister());
+        
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -199,7 +203,8 @@ public class CompactView extends javax.swing.JFrame implements TaskOptions_inter
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(CompactView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        
+        //</editor-fold>
+        //</editor-fold>
         
         tablePopupMenu = new JPopupMenu();
         DerbyDB db = new DerbyDB();

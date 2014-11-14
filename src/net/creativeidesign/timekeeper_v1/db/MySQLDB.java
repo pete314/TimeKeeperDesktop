@@ -272,7 +272,7 @@ public class MySQLDB implements DbCrud{
                         + "TITLE = '"+updatedItem.getStrTitle()+"', "
                         + "DESCRIPTION = '"+updatedItem.getStrDescription()+"', "
                         + "FINISH_DATE = '"+updatedItem.getDtDateUntil()+"', "
-                        + "UPDATED = " + updatedItem.getDtUpdated()
+                        + "UPDATED = '" + updatedItem.getDtUpdated() + "'"
                         + " WHERE local_id = " + id
                         + " and user_id = " + currentUserId;
         System.out.println(updatedItem);
