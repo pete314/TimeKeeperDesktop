@@ -1,0 +1,42 @@
+******************************
+***
+*	This meant to test the class strucure ofModel Controland Derby data connection classes
+***
+******************************
+// run this from main
+        ToDoItemModelControl importantSoon = new ToDoItemModelControl("ImportantSoon", 1);
+        importantSoon.createToDoItemModel(new ToDoItemModel().setiId(1).setStrTitle("Test Title").setStrDescription("Descriptioin"));
+        ToDoItemModel foundItem = importantSoon.getToDoItemById(1);
+        
+        if(foundItem != null){
+            System.out.println(foundItem);
+        }else{
+            System.out.println("Not Found!");
+        }
+        
+        DerbyDB db = new DerbyDB();
+        //db.executeStatement("insert into app.user_details values ('1', 'Peter', 'pass', 'email@email.com', 'Peter Nagy')");
+        //db.executeStatement("insert into app.items values (DEFAULT)");
+        db.executeQuery("select * from app.user_details");
+        db.executeQuery("select * from app.items");
+        //db.createItemInDB(new ToDoItemModel().setiId(0).setStrTitle("This Title").setStrDescription("Descriptioin this description").setDtDateUntil("2014-09-11").setDtCreatedDate());
+        db.executeQuery("select * from app.items");
+        //test FindItem
+        ToDoItemModel secondChecker = db.findItemInDB(11);
+        System.out.println("The findItem returned: " + secondChecker);
+        db.executeQuery("select * from app.items");
+        db.updateItemInDB(17, secondChecker);
+        db.executeQuery("select * from app.items");
+        //test delete by id
+        db.deleteItemInDB(12, "ITEMS");
+        
+        //test delete by id
+        db.deleteItemInDB(new ToDoItemModel().setiId(14), "ITEMS");
+        
+        db.executeQuery("select * from app.items");
+        //test read db
+        System.out.println("\t\tTHIS WILL CREATE A TABLE FROM LIST OBJECTS");
+        for(ToDoItemModel item : db.readItemsInDB()){
+            System.out.println(item);
+        }
+        db.closeConnection();
