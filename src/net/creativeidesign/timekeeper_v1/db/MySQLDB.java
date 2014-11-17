@@ -245,7 +245,7 @@ public class MySQLDB implements DbCrud{
     }
 
 
-
+    
     /**
      *
      * @param newItem
@@ -255,7 +255,7 @@ public class MySQLDB implements DbCrud{
     @Override
     public boolean createItemInDB(ToDoItemModel newItem) {
         String query = "INSERT INTO ITEMS (LOCAL_ID, CATEGORY, TITLE, DESCRIPTION, FINISH_DATE, CREATED, UPDATED, USER_ID) " +
-                       "VALUES ("+newItem.getiId()+","+newItem.getiCategory()+", '"+newItem.getStrTitle()+"', '"+newItem.getStrDescription()+"', '"+newItem.getDtDateUntil()+"', now(), '"+newItem.getDtUpdated()+"', "+currentUserId+")";
+                       "VALUES ("+newItem.getiId()+","+newItem.getiCategory()+", '"+newItem.getStrTitle()+"', '"+newItem.getStrDescription()+"', '"+newItem.getDtDateUntil()+"', '"+newItem.getDtCreatedDate()+"', '"+newItem.getDtUpdated()+"', "+currentUserId+")";
         return executeStatement(query);
 
     }
@@ -352,7 +352,11 @@ public class MySQLDB implements DbCrud{
     public boolean deleteItemInDB(ToDoItemModel deleteItem, String tableName) {
         return deleteItemInDB(deleteItem.getiId(), tableName);
     }
-
+    
+    
+    public boolean deleteAllItems(){
+        return !executeStatement("delete from items where user_id = " + currentUserId);
+    }
 
     /*
     /*

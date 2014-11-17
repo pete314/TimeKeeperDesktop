@@ -310,7 +310,7 @@ public class MainDesktopPane extends javax.swing.JFrame {
     }//GEN-LAST:event_compactViewMenuItemActionPerformed
 
     private void syncMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_syncMenuItemActionPerformed
-        if(SyncData.Sync()){
+        if(SyncData.upSync(false)){
             JOptionPane.showMessageDialog (null, "Syncronized sucessfully!", "Syncronizing", JOptionPane.INFORMATION_MESSAGE);
             System.out.println("Synced sucessfully");
         }else

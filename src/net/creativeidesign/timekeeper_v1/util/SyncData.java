@@ -1,7 +1,7 @@
 /*
- * This class ment to sync the local and the remote db.
- * Will be called from the mainDesktopPane every 5 minutes.
- * Also possible to force the sync from main manu
+ * THIS CLASS NEEDS A SERIOUS RE-JIG
+ * The upsync has two options if run as startup it wipes the table(!!!RE-JIG!!!)
+ * and creates new items based what is in the local db. If not startup it compares what is new.
  */
 package net.creativeidesign.timekeeper_v1.util;
 
@@ -24,7 +24,82 @@ public class SyncData {
     * Check is there anything to sync to remote db and sync
      * @return true if 
     */
-    public static boolean Sync(){
+    public static boolean upSync(boolean startUpSync){
+        System.out.println("upSync Started");
+        MySQLDB mdb = new MySQLDB();
+        DerbyDB db = new DerbyDB();
+        int uploadCnt, sucessCnt;
+        boolean sucess = false;
+        
+        
+        ArrayList<ToDoItemModel> localItems = db.readItemsInDB();
+        ArrayList<ToDoItemModel> remoteItems = mdb.readItemsInDB();
+        ArrayList<ToDoItemModel> uploadItems = new ArrayList<>();
+        ArrayList<ToDoItemModel> downloadItems = new ArrayList<>();
+        
+        System.out.println(remoteItems.size());
+        
+        mdb.executeStatement("BEGIN");
+        
+        uploadCnt = sucessCnt = 0;
+        
+        //
+        if(!startUpSync){
+            //sync up first
+            for(ToDoItemModel itemLoc : localItems){
+                boolean notFound = true;
+                for(ToDoItemModel itemRem : remoteItems){
+                    if(itemRem.getiId() == itemLoc.getiId() || itemRem.getDtCreatedDate().equals(itemLoc.getDtCreatedDate())){
+                        notFound = false;
+                        if(itemRem.getDtUpdated().before(itemLoc.getDtUpdated()) || itemRem.getiId() != itemLoc.getiId() )
+                            mdb.updateItemInDB(itemLoc.getiId(), itemLoc);//do update straight
+                    }
+                }
+                if (notFound) {
+                    uploadItems.add(itemLoc);
+                    ++uploadCnt;
+                }
+            }
+            
+            for(ToDoItemModel item : uploadItems){
+               if(!mdb.createItemInDB(item))
+                   ++sucessCnt;
+            }
+            if(uploadCnt == sucessCnt){
+                mdb.executeStatement("COMMIT");
+                sucess = true;
+            }
+            else
+                mdb.executeStatement("ROLL BACK");
+        }else{
+            mdb.deleteAllItems();
+            System.out.println("Table wiped!");
+            //At this stage the remote db is empty so simply populate with local data
+            for(ToDoItemModel itemLoc : localItems){
+                if(!mdb.createItemInDB(itemLoc))
+                   ++sucessCnt;
+            }
+            
+            if(sucessCnt == localItems.size()){
+                mdb.executeStatement("COMMIT");
+                sucess = true;
+            }
+            else
+                mdb.executeStatement("ROLL BACK");
+                
+        }
+        
+        
+        db.closeConnection();
+        mdb.closeConn();
+        
+        return sucess;
+    }
+    
+    /**
+    *downSync from here
+    */
+    public static boolean downSync(){
         System.out.println("upSync Started");
         MySQLDB mdb = new MySQLDB();
         DerbyDB db = new DerbyDB();
@@ -34,52 +109,29 @@ public class SyncData {
         ArrayList<ToDoItemModel> uploadItems = new ArrayList<>();
         ArrayList<ToDoItemModel> downloadItems = new ArrayList<>();
         
-        System.out.println(remoteItems.size());
-        
-        //sync up first
-        localItems.stream().forEach((itemLoc) -> {
-            boolean notFound = true;
-            for(ToDoItemModel itemRem : remoteItems){
-                if(itemRem.getiId() == itemLoc.getiId()){
-                    notFound = false;
-                        System.out.println("Remote item: " + itemRem.getDtUpdated().toString());
-                        System.out.println("Local item: " + itemLoc.getDtUpdated().toString());
-                    if(itemRem.getDtUpdated().before(itemLoc.getDtUpdated()))
-                        mdb.updateItemInDB(itemLoc.getiId(), itemLoc);//do update straight
-                }
-            }
-            if (notFound) {
-                uploadItems.add(itemLoc);
-            }
-        });
-        
-        
-        //sycn Down
         remoteItems.stream().forEach((itemRem) -> {
-            boolean notFound = true;
-            for(ToDoItemModel itemLoc : localItems){
-                if(itemLoc.getiId() == itemRem.getiId()){
-                    notFound = false;
-                        System.out.println("Remote item: " + itemLoc.getDtUpdated().toString());
-                        System.out.println("Local item: " + itemRem.getDtUpdated().toString());
-                    if(itemLoc.getDtUpdated().before(itemRem.getDtUpdated()))
-                        db.updateItemInDB(itemRem.getiId(), itemRem);//do update straight
+                boolean notFound = true;
+                for(ToDoItemModel itemLoc : localItems){
+                    if(itemLoc.getiId() == itemRem.getiId()){
+                        notFound = false;
+                            System.out.println("Remote item: " + itemLoc.getiId());
+                            System.out.println("Local item: " + itemRem.getiId());
+                        if(itemLoc.getDtUpdated().before(itemRem.getDtUpdated()))
+                            db.updateItemInDB(itemRem.getiId(), itemRem, true);//do with the overloaded sync update method
+                    }
                 }
-            }
-            if (notFound) {
-                downloadItems.add(itemRem);
-            }
-        });
+                if (notFound) {
+                    downloadItems.add(itemRem);
+                }
+            });
         
         db.closeConnection();
         mdb.closeConn();
         
-        boolean syncSucess = false;
-        syncSucess = (uploadItems.isEmpty() ? true : uploadSyncItems(uploadItems)) 
-                && (downloadItems.isEmpty() ? true : downloadSyncItems(downloadItems));//if there is an issue with the remote db connection this will be false
-        
-        return true;
+        //at this stage the remote db is uodated with local 
+        return downloadItems.isEmpty() ? true : downloadSyncItems(downloadItems);//if there is an issue with the remote db connection this will be false
     }
+    
     /**
     * Sync the items up to remote db
     */

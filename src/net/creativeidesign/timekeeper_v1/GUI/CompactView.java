@@ -61,9 +61,11 @@ public class CompactView extends javax.swing.JFrame implements TaskOptions_inter
         normalViewBtn = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         itemCategorySelector = new javax.swing.JComboBox();
+        addTaskBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Time Keeper [desktop - v0.2]");
+        setBackground(new java.awt.Color(0, 204, 204));
 
         normalViewBtn.setText("Normal View");
         normalViewBtn.addActionListener(new java.awt.event.ActionListener() {
@@ -79,25 +81,31 @@ public class CompactView extends javax.swing.JFrame implements TaskOptions_inter
             }
         });
 
+        addTaskBtn.setText("Add Task");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(normalViewBtn)
-                    .addComponent(itemCategorySelector, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(itemCategorySelector, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(normalViewBtn)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(addTaskBtn))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(itemCategorySelector, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(normalViewBtn))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(normalViewBtn)
+                    .addComponent(addTaskBtn)))
         );
 
         pack();
@@ -337,6 +345,7 @@ public class CompactView extends javax.swing.JFrame implements TaskOptions_inter
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addTaskBtn;
     private javax.swing.JComboBox itemCategorySelector;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton normalViewBtn;

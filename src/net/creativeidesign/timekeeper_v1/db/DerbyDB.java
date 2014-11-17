@@ -265,6 +265,23 @@ public class DerbyDB implements DbCrud{
         System.out.println(updatedItem);
         return executeStatement(query);
     }
+    
+    /**
+    * This is the update for the sync, note the updated set by the model
+    *
+    */
+    public boolean updateItemInDB(int id, ToDoItemModel updatedItem, boolean sync) {
+        String query = "UPDATE APP.ITEMS SET "
+                        + "CATEGORY = "+updatedItem.getiCategory()+", "
+                        + "TITLE = '"+updatedItem.getStrTitle()+"', "
+                        + "DESCRIPTION = '"+updatedItem.getStrDescription()+"', "
+                        + "FINISH_DATE = '"+updatedItem.getDtDateUntil()+"', "
+                        + "UPDATED = '" + updatedItem.getDtUpdated() + "' "
+                        + "WHERE id = " + id
+                        + " AND user_id = " + currentUserId;
+        System.out.println(updatedItem);
+        return executeStatement(query);
+    }
 
     /**
      *

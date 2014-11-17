@@ -14,7 +14,7 @@ import java.awt.event.WindowEvent;
  */
 public class FrameLister extends WindowAdapter{
     public void windowClosing(WindowEvent e) {
-       SyncData.Sync();
+       SyncData.upSync();
        
        System.exit(0);
                 
