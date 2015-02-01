@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.mail.MessagingException;
 import javax.swing.JOptionPane;
+import net.creativeidesign.timekeeper_v1.UserModel;
 import net.creativeidesign.timekeeper_v1.db.DerbyDB;
 import net.creativeidesign.timekeeper_v1.db.MySQLDB;
 import net.creativeidesign.timekeeper_v1.util.PasswordHash;
@@ -24,13 +25,21 @@ import net.creativeidesign.timekeeper_v1.util.SendEmail;
  * @author Pi
  */
 public class RegistrationForm extends javax.swing.JDialog {
-
+    
+    private UserModel um;
     /**
      * Creates new form RegistrationForm
      */
     public RegistrationForm(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        initMyComponents();
+    }
+    
+    public RegistrationForm(java.awt.Frame parent, boolean modal, UserModel um) {
+        super(parent, modal);
+        initComponents();
+        this.um = um;
         initMyComponents();
     }
 
@@ -210,6 +219,15 @@ public class RegistrationForm extends javax.swing.JDialog {
         this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
         
         warningLabel.setText("");
+        if(um != null){
+            setTitle("Settings");
+            fullNameTextField.setText(um.getFull_name());
+            usernameTextField.setText(um.getUsername());
+            passwordTextField.setText(null);
+            rePasswordTextFields.setText(null);
+            emailTextField.setText(um.getEmail());
+        }
+                
     }
     
     private void resetBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBtnActionPerformed

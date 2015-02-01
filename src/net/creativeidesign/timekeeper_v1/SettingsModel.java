@@ -1,7 +1,5 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+    **This class should hold the special settings for the user
  */
 package net.creativeidesign.timekeeper_v1;
 
@@ -10,5 +8,6 @@ package net.creativeidesign.timekeeper_v1;
  * @author Pi
  */
 public class SettingsModel {
+    
     
 }

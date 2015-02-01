@@ -4,9 +4,23 @@
  * and open the template in the editor.
  */
 package net.creativeidesign.timekeeper_v1.GUI;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import net.creativeidesign.timekeeper_v1.ToDoItemModel;
+import net.creativeidesign.timekeeper_v1.ToDoItemModelControl;
 import net.creativeidesign.timekeeper_v1.UserModel;
+import net.creativeidesign.timekeeper_v1.db.DerbyDB;
 import net.creativeidesign.timekeeper_v1.util.BigDump;
 import net.creativeidesign.timekeeper_v1.util.FrameLister;
 import net.creativeidesign.timekeeper_v1.util.SyncData;
@@ -16,8 +30,11 @@ import net.creativeidesign.timekeeper_v1.util.TaskImport;
  *
  * @author Pi
  */
-public class MainDesktopPane extends javax.swing.JFrame {
-    
+public class MainDesktopPane extends javax.swing.JFrame implements TaskOptions_interface {
+    private ToDoItemModelControl itemsListControl;
+    private JTable titleTable;
+    private JPopupMenu tablePopupMenu;
+    private int selectedID;
     private UserModel currentUserModel;
     /**
      * Creates new form TimeKeeper_v1_GUI
@@ -38,6 +55,7 @@ public class MainDesktopPane extends javax.swing.JFrame {
     private void initComponents() {
 
         jMenuItem9 = new javax.swing.JMenuItem();
+        jSeparator4 = new javax.swing.JSeparator();
         desktopPane = new javax.swing.JDesktopPane();
         menuBar = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
@@ -54,10 +72,9 @@ public class MainDesktopPane extends javax.swing.JFrame {
         notImpNotSoonMenuItem = new javax.swing.JMenuItem();
         finishedTaskMenuItem = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
-        jMenuItem12 = new javax.swing.JMenuItem();
         compactViewMenuItem = new javax.swing.JMenuItem();
         helpMenu = new javax.swing.JMenu();
-        contentMenuItem = new javax.swing.JMenuItem();
+        settingsMenuItem = new javax.swing.JMenuItem();
         aboutMenuItem = new javax.swing.JMenuItem();
 
         jMenuItem9.setText("jMenuItem9");
@@ -172,9 +189,6 @@ public class MainDesktopPane extends javax.swing.JFrame {
         jMenu3.setMnemonic('w');
         jMenu3.setText("Window");
 
-        jMenuItem12.setText("Start Screen");
-        jMenu3.add(jMenuItem12);
-
         compactViewMenuItem.setText("Compact view");
         compactViewMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -188,9 +202,14 @@ public class MainDesktopPane extends javax.swing.JFrame {
         helpMenu.setMnemonic('h');
         helpMenu.setText("Help");
 
-        contentMenuItem.setMnemonic('c');
-        contentMenuItem.setText("Settings");
-        helpMenu.add(contentMenuItem);
+        settingsMenuItem.setMnemonic('c');
+        settingsMenuItem.setText("Settings");
+        settingsMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                settingsMenuItemActionPerformed(evt);
+            }
+        });
+        helpMenu.add(settingsMenuItem);
 
         aboutMenuItem.setMnemonic('a');
         aboutMenuItem.setText("About");
@@ -208,7 +227,7 @@ public class MainDesktopPane extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, 722, Short.MAX_VALUE)
+            .addComponent(desktopPane, javax.swing.GroupLayout.DEFAULT_SIZE, 733, Short.MAX_VALUE)
         );
 
         desktopPane.getAccessibleContext().setAccessibleName("mainDesktop");
@@ -241,6 +260,145 @@ public class MainDesktopPane extends javax.swing.JFrame {
         }
         //</editor-fold>
         //</editor-fold>
+        
+        //reset the pane colors
+        /**This section was only for the welcome panel version available
+        categoryDesktopPane.setBackground(new Color(76, 115, 150, 70));
+        categoryItemsDesktopPane.setBackground(new Color(76, 115, 150, 70));
+        itemDesktopPane.setBackground(new Color(76, 115, 150, 70));
+        */
+        
+        //set up the table holding the taks
+        tablePopupMenu = new JPopupMenu();
+        DerbyDB db = new DerbyDB();
+        itemsListControl = new ToDoItemModelControl(db.readItemsInDB());
+        
+        //create table
+        String[] colHeaders = {"id", "Task Title"};
+        titleTable = new JTable();
+        
+        
+        DefaultTableModel titleTableModel = (DefaultTableModel) titleTable.getModel();
+        titleTableModel.setColumnIdentifiers(colHeaders);
+        
+        titleTable.setTableHeader(null);
+        //titleTable.setBackground(new Color(76, 115, 150, 70));
+        //jScrollPane1.setBackground(new Color(76, 115, 150, 70));
+        
+        ListSelectionModel cellSelectionModel = titleTable.getSelectionModel();
+        cellSelectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        cellSelectionModel.addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                int selectedData = 0;
+
+                int[] selectedRow = titleTable.getSelectedRows();
+                int[] selectedColumns = titleTable.getSelectedColumns();
+
+                for (int i = 0; i < selectedRow.length; i++) {
+                  for (int j = 0; j < selectedColumns.length; j++) {
+                    selectedData = (Integer) titleTable.getValueAt(selectedRow[i], 0);
+                  }
+                }
+
+                selectedID = selectedData;
+            }
+        });
+        //hide the id column
+        titleTable.getColumnModel().getColumn(0).setMinWidth(0);
+        titleTable.getColumnModel().getColumn(0).setMaxWidth(0);
+
+        //jScrollPane1.setViewportView(titleTable);
+        
+        /**
+         * Right Click menu option
+         */
+        
+        JMenuItem finishMenuItem = new JMenuItem("Finish Task");
+        finishMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                markAsFinished();
+            }   
+        });
+        tablePopupMenu.add(finishMenuItem);
+        
+        
+        JMenuItem editMenuItem = new JMenuItem("Edit");
+        editMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                openInternalFrame();
+            }   
+        });
+        tablePopupMenu.add(editMenuItem);
+        
+        
+        JMenuItem deleteMenuItem = new JMenuItem("Delete");
+        deleteMenuItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                deleteItem();
+            }   
+        });
+        tablePopupMenu.add(deleteMenuItem);
+        //set mouse listener
+        titleTable.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent evt) {
+              if (evt.isPopupTrigger()) {
+                tablePopupMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+              }
+            }
+
+            public void mouseReleased(MouseEvent evt) {
+              if (evt.isPopupTrigger()) {
+                tablePopupMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+              }
+            }
+          });
+    }
+    
+    @Override
+    public void markAsFinished(){
+        int dialogButton = JOptionPane.YES_NO_OPTION;
+        int dialogResult = JOptionPane.showConfirmDialog (null, "Are you sure to mark as done?", "Warning", dialogButton);
+        if(dialogResult == JOptionPane.YES_OPTION){
+            ToDoItemModel currentItem;
+            DerbyDB db = new DerbyDB();
+            currentItem = db.findItemInDB(selectedID);
+            currentItem.setiCategory(99);
+
+            if(db.updateItemInDB(selectedID, currentItem)){
+                JOptionPane.showMessageDialog (null, "Whoops something went wrong, please try again!", "Result message", JOptionPane.INFORMATION_MESSAGE);
+            }else{
+                JOptionPane.showMessageDialog (null, "Succesfully deleted!", "Result message", JOptionPane.INFORMATION_MESSAGE);
+                initMyComponents();
+            }
+            db.closeConnection();
+        }
+    }  
+     
+    @Override
+    public void openInternalFrame(){
+        // JInternalFrame internalFrame = new JInternalFrame();
+         //internalFrame.setContentPane(mainFrame.desktopPane);
+         AddEditItem addItem = new AddEditItem(selectedID);
+         desktopPane.add(addItem);
+         addItem.setVisible(true);
+
+         this.dispose();
+    }
+
+    @Override
+    public void deleteItem(){
+        int dialogButton = JOptionPane.YES_NO_OPTION;
+        int dialogResult = JOptionPane.showConfirmDialog (null, "Are you sure to delete?", "Warning", dialogButton);
+        if(dialogResult == JOptionPane.YES_OPTION){
+            DerbyDB db = new DerbyDB();
+            if(db.deleteItemInDB(selectedID, "items")){
+                JOptionPane.showMessageDialog (null, "Whoops something went wrong, please try again!", "Result message", JOptionPane.INFORMATION_MESSAGE);
+            }else{
+                JOptionPane.showMessageDialog (null, "Succesfully deleted!", "Result message", JOptionPane.INFORMATION_MESSAGE);
+                initMyComponents();
+            }
+            db.closeConnection();
+        }
     }
     
     private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
@@ -316,18 +474,24 @@ public class MainDesktopPane extends javax.swing.JFrame {
         }else
             System.out.println("Something went wrong");
     }//GEN-LAST:event_syncMenuItemActionPerformed
-    
-    /**
-     * @param args the command line arguments
-     */
 
+    private void settingsMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsMenuItemActionPerformed
+       /* Create and display the dialog */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                RegistrationForm dialog = new RegistrationForm(new javax.swing.JFrame(), true, currentUserModel);
+                
+                dialog.setVisible(true);
+            }
+        });
+    }//GEN-LAST:event_settingsMenuItemActionPerformed
+    
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
     private javax.swing.JMenuItem addItemMenuItem;
     private javax.swing.JMenuItem allTasksMenuBtn;
     private javax.swing.JMenuItem compactViewMenuItem;
-    private javax.swing.JMenuItem contentMenuItem;
     public javax.swing.JDesktopPane desktopPane;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenuItem exportMenuItem;
@@ -339,11 +503,12 @@ public class MainDesktopPane extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
-    private javax.swing.JMenuItem jMenuItem12;
     private javax.swing.JMenuItem jMenuItem9;
+    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem notImpNotSoonMenuItem;
     private javax.swing.JMenuItem notImpSoonMenuItem;
+    private javax.swing.JMenuItem settingsMenuItem;
     private javax.swing.JMenuItem syncMenuItem;
     // End of variables declaration//GEN-END:variables
 

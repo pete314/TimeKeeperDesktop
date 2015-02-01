@@ -82,6 +82,11 @@ public class CompactView extends javax.swing.JFrame implements TaskOptions_inter
         });
 
         addTaskBtn.setText("Add Task");
+        addTaskBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addTaskBtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -166,6 +171,15 @@ public class CompactView extends javax.swing.JFrame implements TaskOptions_inter
         titleTable.repaint();
         tableModel.fireTableDataChanged();
     }//GEN-LAST:event_itemCategorySelectorActionPerformed
+
+    private void addTaskBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addTaskBtnActionPerformed
+        mainFrame.setVisible(true);
+        AddEditItem addItem = new AddEditItem();
+        mainFrame.desktopPane.add(addItem);
+        addItem.setVisible(true);
+
+        this.dispose();
+    }//GEN-LAST:event_addTaskBtnActionPerformed
     
     /**
     * This function check if a date is out of range now()+8
@@ -308,7 +322,7 @@ public class CompactView extends javax.swing.JFrame implements TaskOptions_inter
             if(db.updateItemInDB(selectedID, currentItem)){
                 JOptionPane.showMessageDialog (null, "Whoops something went wrong, please try again!", "Result message", JOptionPane.INFORMATION_MESSAGE);
             }else{
-                JOptionPane.showMessageDialog (null, "Succesfully deleted!", "Result message", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog (null, "Succesfully marked as finished!", "Result message", JOptionPane.INFORMATION_MESSAGE);
                 initMyComponents();
             }
             db.closeConnection();
