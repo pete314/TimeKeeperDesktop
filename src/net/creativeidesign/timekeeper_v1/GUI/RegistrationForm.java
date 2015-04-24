@@ -319,7 +319,7 @@ public class RegistrationForm extends javax.swing.JDialog {
                     "\n\n*****************\nThis email was generated automatically please do not reply!\n";
         
         try {
-            SendEmail.Send("mszaki.mailer", "(r6id^A~193[T4B", emailTextField.getText(), "webpmaster@gmail.com", "New Registration to timekeeper", msg);
+            SendEmail.Send("gmail_account_name_here", "password_here", emailTextField.getText(), "webpmaster@gmail.com", "New Registration to timekeeper", msg);
         } catch (MessagingException ex) {
             Logger.getLogger(RegistrationForm.class.getName()).log(Level.SEVERE, null, ex);
         }
