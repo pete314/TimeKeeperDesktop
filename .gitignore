@@ -1,5 +1,6 @@
-nbproject/*
-TEST_COMMANDS/*
-build/*
+nbproject/
+TEST_COMMANDS/
+build/
 build.xml
 *.mf
+!.gitignore
