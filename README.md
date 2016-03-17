@@ -1,6 +1,6 @@
 #Java desktop time management app 
 ###Project General Description 
-The project is a simple time management application with desktop and compact view. Can be used to create quick notes and organize them based on importance and date. The credit for categorizing goes to Randy Pausch [Randy Pausch Lecture: Time Management](https://youtu.be/oTugjssqOT0?t=1255)
+The project is a simple time management application with desktop and compact view. Can be used to create quick notes and organize them based on importance and date. The credit for the categorization idea goes to Randy Pausch [Randy Pausch Lecture: Time Management](https://youtu.be/oTugjssqOT0?t=1255)
 
 ###Features
  - Multi user can login/work on same installation
